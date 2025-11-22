@@ -45,7 +45,11 @@ public class PaginaCadastroActivity extends AppCompatActivity {
     }
 
     public void salvarRemedio(View v) {
-        OnSuccessListener<String> onSuccess = id -> context.remedioAtual.id = id;
+        screenToObject();
+        OnSuccessListener<String> onSuccess = id -> {
+            context.remedioAtual.id = id;
+            Toast.makeText(this, "Remédio salvo com sucesso!", Toast.LENGTH_SHORT).show();
+        };
         db.salvarRemedio(context.remedioAtual)
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(showFailureToast(this, "salvar remédio"));
@@ -79,7 +83,7 @@ public class PaginaCadastroActivity extends AppCompatActivity {
         try {
             context.remedioAtual.horarioDeConsumo = LocalTime.parse(txtConsumo.getText().toString());
         } catch (Exception e) {
-            context.remedioAtual.horarioDeConsumo = LocalTime.now().withNano(0);
+            context.remedioAtual.horarioDeConsumo = context.now();
             Toast.makeText(this, "Horário em formato errado. Usando horário atual.", Toast.LENGTH_SHORT).show();
         }
     }

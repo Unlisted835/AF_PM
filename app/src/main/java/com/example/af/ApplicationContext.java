@@ -1,5 +1,7 @@
 package com.example.af;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApplicationContext {
@@ -11,6 +13,9 @@ public class ApplicationContext {
         }
         return _instance;
     }
-    public Remedio remedioAtual;
-    public List<Remedio> listaAtual;
+    public Remedio remedioAtual = new Remedio();
+    public List<Remedio> listaAtual = new ArrayList<>();
+    public LocalTime now() {
+        return LocalTime.now().minusHours(3).withNano(0);
+    }
 }

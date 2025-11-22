@@ -1,5 +1,7 @@
 package com.example.af;
 
+import com.google.firebase.firestore.Exclude;
+
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -8,34 +10,8 @@ public class Remedio {
     public String id;
     public String nome;
     public String descricao;
-    public LocalTime horarioDeConsumo;
+    @Exclude public LocalTime horarioDeConsumo;
     public boolean consumido;
-
-
-    public Remedio setId(String id) {
-        this.id = id;
-        return this;
-    }
-
-    public Remedio setNome(String nome) {
-        this.nome = nome;
-        return this;
-    }
-
-    public Remedio setDescricao(String descricao) {
-        this.descricao = descricao;
-        return this;
-    }
-
-    public Remedio setHorarioDeConsumo(LocalTime horarioDeConsumo) {
-        this.horarioDeConsumo = horarioDeConsumo;
-        return this;
-    }
-
-    public Remedio setConsumido(boolean consumido) {
-        this.consumido = consumido;
-        return this;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -64,6 +40,23 @@ public class Remedio {
         this.descricao = other.descricao;
         this.horarioDeConsumo = other.horarioDeConsumo;
         this.consumido = other.consumido;
+    }
+
+    public String getHorarioString() {
+        if (horarioDeConsumo == null) return null;
+        return horarioDeConsumo.toString();
+    }
+
+    public void setHorarioString(String horarioString) {
+        if (horarioString != null && !horarioString.isEmpty()) {
+            try {
+                this.horarioDeConsumo = LocalTime.parse(horarioString);
+            } catch (Exception e) {
+                this.horarioDeConsumo = ApplicationContext.instance().now();
+            }
+        } else {
+            this.horarioDeConsumo = null;
+        }
     }
 
     public static class Seeds {

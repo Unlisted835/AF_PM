@@ -83,7 +83,12 @@ public class PaginaListagemActivity extends AppCompatActivity {
         startActivity(irParaCadastro);
     }
     public void consumirRemedio(View v, Remedio remedio) {
-        remedio.consumido = !remedio.consumido;
+        Remedio stuntDouble = new Remedio();
+        stuntDouble.copyFrom(remedio);
+        stuntDouble.consumido = !stuntDouble.consumido;
+        db.salvarRemedio(remedio)
+                .addOnSuccessListener(id -> remedio.consumido = !remedio.consumido)
+                .addOnFailureListener(showFailureToast(this, "consumir remédio"));
     }
     public void carregarRemedios() {
         OnSuccessListener<List<Remedio>> onSuccess =  remedios -> {
