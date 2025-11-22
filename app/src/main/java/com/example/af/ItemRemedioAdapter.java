@@ -30,6 +30,7 @@ public class ItemRemedioAdapter extends RecyclerView.Adapter<ItemRemedioViewHold
     @Override
     public void onBindViewHolder(ItemRemedioViewHolder holder, int pos) {
         Remedio remedio = remedios.get(pos);
+        holder.setBackground(pos % 2 == 0);
         holder.setRemedio(remedio);
         holder.setOnRemover(onRemover);
         holder.setOnEditar(onEditar);

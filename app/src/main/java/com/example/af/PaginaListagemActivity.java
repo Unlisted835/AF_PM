@@ -1,24 +1,37 @@
 package com.example.af;
 
+import static com.example.af.Exceptions.showFailureToast;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import java.util.List;
 
 public class PaginaListagemActivity extends AppCompatActivity {
 
     ImageButton btnAdicionar;
     TextView txtTitulo;
     RecyclerView rcvRemedios;
+    ItemRemedioAdapter adapter;
+    ApplicationContext context = ApplicationContext.instance();
+    Database db = Database.instance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,28 +44,61 @@ public class PaginaListagemActivity extends AppCompatActivity {
             return insets;
         });
 
+        carregarRemedios();
+        inicializarComponentes();
+        btnAdicionar.setOnClickListener(this::adicionarRemedio);
+        rcvRemedios.setLayoutManager(new LinearLayoutManager(this));
 
+        adapter = new ItemRemedioAdapter(context.listaAtual);
+        adapter.onRemover = this::removerRemedio;
+        adapter.onEditar = this::editarRemedio;
+        adapter.onConsumir = this::consumirRemedio;
+        rcvRemedios.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        carregarRemedios();
     }
 
     public void adicionarRemedio(View v) {
-        Intent irParaCadastro = new Intent(this, PaginaCadastroActivity.class);
+        context.remedioAtual = null;
+        Intent irParaCadastro = new Intent(PaginaListagemActivity.this, PaginaCadastroActivity.class);
         startActivity(irParaCadastro);
     }
 
-    public void removerRemedio(View v) {
-
+    public void removerRemedio(View v, Remedio remedio) {
+        OnSuccessListener<Void> onSuccess = __ -> {
+            context.listaAtual.remove(remedio);
+            adapter.notifyDataSetChanged();
+        };
+        db.removerRemedio(remedio)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(showFailureToast(this, "remover remédio"));
     }
-
-    public void marcarRemedioComoConsumido(View v) {
-
+    public void editarRemedio(View v, Remedio remedio) {
+        context.remedioAtual = remedio;
+        Intent irParaCadastro = new Intent(PaginaListagemActivity.this, PaginaCadastroActivity.class);
+        startActivity(irParaCadastro);
+    }
+    public void consumirRemedio(View v, Remedio remedio) {
+        remedio.consumido = !remedio.consumido;
+    }
+    public void carregarRemedios() {
+        OnSuccessListener<List<Remedio>> onSuccess =  remedios -> {
+            context.listaAtual.clear();
+            context.listaAtual.addAll(remedios);
+            adapter.notifyDataSetChanged();
+        };
+        db.carregarRemedios()
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(showFailureToast(this, "carregar remédios"));
     }
 
     private void inicializarComponentes() {
         btnAdicionar = findViewById(R.id.btnAdicionar);
         txtTitulo = findViewById(R.id.txtTitulo);
         rcvRemedios = findViewById(R.id.rcvRemedios);
-    }
-    private void configurarEventos() {
-
     }
 }
