@@ -1,3 +1,33 @@
 <resources>
-    <string name="title">Utilidades Médicas</string>
+    <string name="title_app">Utilidades Médicas</string>
+    <string name="title_listing">Utilidades Médicas</string>
+    <string name="title_config">Configuração do App</string>
+    <string name="gemini_medicineDescriptionGeneration_instructions">
+        Você é um farmacêutico criativo que deve criar descrições adequadas,
+        curtas e interessantes de remédios baseando-se apenas nos nomes destes.
+        Escreva como se o conteúdo fosse exibido numa string UTF-8, ou seja,
+        estilização markdown ou qualquer outro tipo de formatação não deve ser utilizado.
+    </string>
+    <string name="gemini_medicineDescriptionGeneration_promptIntro">Nome do remédio: </string>
+    <string name="placeholder_name">Insira um nome</string>
+    <string name="placeholder_consumptionTime">Insira um horário de consumo</string>
+    <string name="placeholder_description">Insira uma descrição</string>
+    <string name="placeholder_geminiApiKey">Insira a chave</string>
+    <string name="button_searchWebForDescription">Procurar descrição na web</string>
+    <string name="button_save">Salvar</string>
+    <string name="button_goBack">Voltar</string>
+    <string name="button_saveAndGoBack">Salvar e voltar</string>
+    <string name="label_geminiApiKey">Chave API Gemini</string>
+    <string name="toast_failure_message">Houve um erro ao</string>
+    <string name="toast_failure_context_removeMedicine">remover remédio</string>
+    <string name="toast_failure_context_consumeMedicine">consumir remédio</string>
+    <string name="toast_failure_context_loadMedicines">carregar remédios</string>
+    <string name="toast_failure_context_seedDatabase">popular o banco de dados</string>
+    <string name="toast_failure_context_saveMedicine">salvar remédio</string>
+    <string name="toast_failure_context_generateDescription">gerar descrição</string>
+    <string name="toast_validation_name_toShort">Nome curto demais para geração automática de descrição. Precisa de pelo menos 5 caracteres</string>
+    <string name="toast_validation_name_notNull">Nome não pode ser nulo</string>
+    <string name="toast_validation_consumptionTime_wrongFormat">Horário em formato errado. Usando horário atual.</string>
+    <string name="toast_success_medicineSaved">Remédio salvo com sucesso!</string>
+    <string name="error_gemini_invalidApiKey">CHAVE DE API INVÁLIDA</string>
 </resources>

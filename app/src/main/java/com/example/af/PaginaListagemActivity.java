@@ -44,6 +44,8 @@ public class PaginaListagemActivity extends AppCompatActivity {
             return insets;
         });
 
+        context.geminiForbiddenMessage = getString(R.string.error_gemini_invalidApiKey);
+
         carregarRemedios();
         btnAdicionar = findViewById(R.id.btnAdicionar);
         btnConfig = findViewById(R.id.btnConfig);
@@ -80,7 +82,7 @@ public class PaginaListagemActivity extends AppCompatActivity {
         };
         db.removerRemedio(remedio)
                 .addOnSuccessListener(onSuccess)
-                .addOnFailureListener(showFailureToast(this, "remover remédio"));
+                .addOnFailureListener(showFailureToast(this, toastRemoveMedicine()));
     }
     private void editarRemedio(View v, Remedio remedio) {
         context.remedioAtual = remedio;
@@ -93,7 +95,7 @@ public class PaginaListagemActivity extends AppCompatActivity {
         stuntDouble.consumido = !stuntDouble.consumido;
         db.salvarRemedio(remedio)
                 .addOnSuccessListener(id -> remedio.consumido = !remedio.consumido)
-                .addOnFailureListener(showFailureToast(this, "consumir remédio"));
+                .addOnFailureListener(showFailureToast(this, toastConsumeMedicine()));
     }
     private void carregarRemedios() {
         OnSuccessListener<List<Remedio>> onSuccess =  remedios -> {
@@ -103,7 +105,7 @@ public class PaginaListagemActivity extends AppCompatActivity {
         };
         db.carregarRemedios()
                 .addOnSuccessListener(onSuccess)
-                .addOnFailureListener(showFailureToast(this, "carregar remédios"));
+                .addOnFailureListener(showFailureToast(this, toastLoadMedicines()));
     }
 
     private void abrirConfiguracoes(View v) {
@@ -118,6 +120,19 @@ public class PaginaListagemActivity extends AppCompatActivity {
         };
         db.seed(Remedio.Seeds.all())
            .addOnSuccessListener(onSuccess)
-           .addOnFailureListener(showFailureToast(this, "popular banco de dados"));
+           .addOnFailureListener(showFailureToast(this, toastSeedDatabase()));
+    }
+
+    private String toastRemoveMedicine() {
+        return getString(R.string.toast_failure_message) + " " + getString(R.string.toast_failure_context_removeMedicine);
+    }
+    private String toastConsumeMedicine() {
+        return getString(R.string.toast_failure_message) + " " + getString(R.string.toast_failure_context_consumeMedicine);
+    }
+    private String toastLoadMedicines() {
+        return getString(R.string.toast_failure_message) + " " + getString(R.string.toast_failure_context_loadMedicines);
+    }
+    private String toastSeedDatabase() {
+        return getString(R.string.toast_failure_message) + " " + getString(R.string.toast_failure_context_seedDatabase);
     }
 }

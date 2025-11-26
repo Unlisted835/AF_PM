@@ -12,7 +12,7 @@
         android:id="@+id/txtTitulo"
         android:layout_width="166dp"
         android:layout_height="48dp"
-        android:text="@string/title"
+        android:text="@string/title_listing"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,5 +1,6 @@
 package com.example.af;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
@@ -45,7 +46,7 @@ public class GeminiService {
 
             if (connection.getResponseCode() != 200) {
                if (connection.getResponseCode() == 403) {
-                  throw new Exception("INVALID API KEY");
+                  throw new Exception(context.geminiForbiddenMessage);
                }
                String msg = "[" + connection.getResponseCode() + "] " + connection.getResponseMessage();
                throw new Exception(msg);
