@@ -87,7 +87,7 @@
         android:layout_height="239dp"
         android:ems="10"
         android:hint="Descrição"
-        android:inputType="text"
+        android:inputType="text|textMultiLine"
         android:singleLine="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

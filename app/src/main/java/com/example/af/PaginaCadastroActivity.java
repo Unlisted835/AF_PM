@@ -14,15 +14,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.time.LocalTime;
+import java.util.concurrent.TimeUnit;
 
 public class PaginaCadastroActivity extends AppCompatActivity {
     Button btnSalvar, btnVoltar, btnSalvarEVoltar, btnAcharDescricao;
     EditText txtNome, txtDescricao, txtConsumo;
     ApplicationContext context = ApplicationContext.instance();
     Database db = Database.instance();
+    GeminiService gemini = new GeminiService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +47,18 @@ public class PaginaCadastroActivity extends AppCompatActivity {
         objectToScreen(context.remedioAtual);
     }
 
+    public boolean checkIsInvalid(Remedio remedio) {
+        if (remedio.nome == null) {
+            Toast.makeText(this, "Nome não pode ser nulo", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
+    }
     public void salvarRemedio(View v) {
-        screenToObject();
+        screenToObject(context.remedioAtual);
+        if (checkIsInvalid(context.remedioAtual)) {
+            return;
+        }
         OnSuccessListener<String> onSuccess = id -> {
             context.remedioAtual.id = id;
             Toast.makeText(this, "Remédio salvo com sucesso!", Toast.LENGTH_SHORT).show();
@@ -63,7 +76,22 @@ public class PaginaCadastroActivity extends AppCompatActivity {
         voltarParaListagem(v);
     }
     public void acharDescricaoNaWeb(View v) {
-        txtDescricao.setText("Descrição achada");
+        String nomeAtual = txtNome.getText().toString();
+        if (nomeAtual == null) {
+            return;
+        }
+        if (nomeAtual.length() < 5) {
+            Toast.makeText(this, "Nome curto demais para geração automática de descrição", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Thread task = gemini.send(
+           nomeAtual,
+           context.geminiInstructions,
+           txtDescricao::setText,
+           showFailureToast(this, "gerar descrição"));
+
+        task.start();
     }
 
 
@@ -77,13 +105,13 @@ public class PaginaCadastroActivity extends AppCompatActivity {
             txtConsumo.setText("");
         }
     }
-    private void screenToObject() {
-        context.remedioAtual.nome = txtNome.getText().toString();
-        context.remedioAtual.descricao = txtDescricao.getText().toString();
+    private void screenToObject(Remedio remedio) {
+        remedio.nome = txtNome.getText().toString();
+        remedio.descricao = txtDescricao.getText().toString();
         try {
-            context.remedioAtual.horarioDeConsumo = LocalTime.parse(txtConsumo.getText().toString());
+            remedio.horarioDeConsumo = LocalTime.parse(txtConsumo.getText().toString());
         } catch (Exception e) {
-            context.remedioAtual.horarioDeConsumo = context.now();
+            remedio.horarioDeConsumo = context.now();
             Toast.makeText(this, "Horário em formato errado. Usando horário atual.", Toast.LENGTH_SHORT).show();
         }
     }

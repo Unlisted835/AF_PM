@@ -3,6 +3,7 @@ package com.example.af;
 import com.google.firebase.firestore.Exclude;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 public class Remedio {
@@ -81,5 +82,8 @@ public class Remedio {
                 LocalTime.of(19, 25, 43),
                 false
         );
+        public static List<Remedio> all() {
+            return List.of(melhoral, paracetamal, omeprazol);
+        }
     }
 }

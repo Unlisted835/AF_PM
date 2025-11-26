@@ -26,7 +26,7 @@ import java.util.List;
 
 public class PaginaListagemActivity extends AppCompatActivity {
 
-    ImageButton btnAdicionar;
+    ImageButton btnAdicionar, btnConfig, btnSeed;
     TextView txtTitulo;
     RecyclerView rcvRemedios;
     ItemRemedioAdapter adapter;
@@ -45,10 +45,15 @@ public class PaginaListagemActivity extends AppCompatActivity {
         });
 
         carregarRemedios();
-        inicializarComponentes();
+        btnAdicionar = findViewById(R.id.btnAdicionar);
+        btnConfig = findViewById(R.id.btnConfig);
+        btnSeed = findViewById(R.id.btnSeed);
+        txtTitulo = findViewById(R.id.txtTitulo);
+        rcvRemedios = findViewById(R.id.rcvRemedios);
         btnAdicionar.setOnClickListener(this::adicionarRemedio);
+        btnConfig.setOnClickListener(this::abrirConfiguracoes);
+        btnSeed.setOnClickListener(this::seedDatabase);
         rcvRemedios.setLayoutManager(new LinearLayoutManager(this));
-
         adapter = new ItemRemedioAdapter(context.listaAtual);
         adapter.onRemover = this::removerRemedio;
         adapter.onEditar = this::editarRemedio;
@@ -62,13 +67,13 @@ public class PaginaListagemActivity extends AppCompatActivity {
         carregarRemedios();
     }
 
-    public void adicionarRemedio(View v) {
+    private void adicionarRemedio(View v) {
         context.remedioAtual = null;
         Intent irParaCadastro = new Intent(PaginaListagemActivity.this, PaginaCadastroActivity.class);
         startActivity(irParaCadastro);
     }
 
-    public void removerRemedio(View v, Remedio remedio) {
+    private void removerRemedio(View v, Remedio remedio) {
         OnSuccessListener<Void> onSuccess = __ -> {
             context.listaAtual.remove(remedio);
             adapter.notifyDataSetChanged();
@@ -77,12 +82,12 @@ public class PaginaListagemActivity extends AppCompatActivity {
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(showFailureToast(this, "remover remédio"));
     }
-    public void editarRemedio(View v, Remedio remedio) {
+    private void editarRemedio(View v, Remedio remedio) {
         context.remedioAtual = remedio;
         Intent irParaCadastro = new Intent(PaginaListagemActivity.this, PaginaCadastroActivity.class);
         startActivity(irParaCadastro);
     }
-    public void consumirRemedio(View v, Remedio remedio) {
+    private void consumirRemedio(View v, Remedio remedio) {
         Remedio stuntDouble = new Remedio();
         stuntDouble.copyFrom(remedio);
         stuntDouble.consumido = !stuntDouble.consumido;
@@ -90,7 +95,7 @@ public class PaginaListagemActivity extends AppCompatActivity {
                 .addOnSuccessListener(id -> remedio.consumido = !remedio.consumido)
                 .addOnFailureListener(showFailureToast(this, "consumir remédio"));
     }
-    public void carregarRemedios() {
+    private void carregarRemedios() {
         OnSuccessListener<List<Remedio>> onSuccess =  remedios -> {
             context.listaAtual.clear();
             context.listaAtual.addAll(remedios);
@@ -101,9 +106,18 @@ public class PaginaListagemActivity extends AppCompatActivity {
                 .addOnFailureListener(showFailureToast(this, "carregar remédios"));
     }
 
-    private void inicializarComponentes() {
-        btnAdicionar = findViewById(R.id.btnAdicionar);
-        txtTitulo = findViewById(R.id.txtTitulo);
-        rcvRemedios = findViewById(R.id.rcvRemedios);
+    private void abrirConfiguracoes(View v) {
+        Intent irParaConfig = new Intent(PaginaListagemActivity.this, ConfigurationActivity.class);
+        startActivity(irParaConfig);
+    }
+
+    private void seedDatabase(View v) {
+        OnSuccessListener<List<Remedio>> onSuccess = remedios -> {
+            context.listaAtual.addAll(remedios);
+            adapter.notifyDataSetChanged();
+        };
+        db.seed(Remedio.Seeds.all())
+           .addOnSuccessListener(onSuccess)
+           .addOnFailureListener(showFailureToast(this, "popular banco de dados"));
     }
 }

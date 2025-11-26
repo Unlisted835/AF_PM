@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.gson)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.appcompat)
