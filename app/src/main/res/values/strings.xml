@@ -18,6 +18,7 @@
     <string name="button_goBack">Go back</string>
     <string name="button_saveAndGoBack">Save and go back</string>
     <string name="label_geminiApiKey">Gemini API Key</string>
+    <string name="label_consumptionTime">Consumption Time</string>
     <string name="toast_failure_message">An error occurred while</string>
     <string name="toast_failure_context_removeMedicine">removing medicine</string>
     <string name="toast_failure_context_consumeMedicine">consuming medicine</string>

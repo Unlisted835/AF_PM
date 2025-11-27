@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -14,13 +16,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.time.LocalTime;
 
 public class PaginaCadastroActivity extends AppCompatActivity {
    Button btnSalvar, btnVoltar, btnSalvarEVoltar, btnAcharDescricao;
-   EditText txtNome, txtDescricao, txtConsumo;
+   EditText txtNome, txtDescricao;
+   ProgressBar prbDescription;
+   TimePicker tmpConsumo;
    ApplicationContext context = ApplicationContext.instance();
    Database db = Database.instance();
    GeminiService gemini = new GeminiService();
@@ -90,13 +95,27 @@ public class PaginaCadastroActivity extends AppCompatActivity {
       prompt += nomeAtual;
       String instructions = getString(R.string.gemini_medicineDescriptionGeneration_instructions);
 
-      Thread task = gemini.send(
-         prompt,
-         instructions,
-         txtDescricao::setText,
-         showFailureToast(this, toastGenerateDescription()));
+      Runnable onEither = () -> {
+         txtDescricao.setHint(getString(R.string.placeholder_description));
+         txtDescricao.setEnabled(true);
+         prbDescription.setVisibility(View.INVISIBLE);
+      };
+      OnSuccessListener<String> onSuccess = generatedDescription -> {
+         txtDescricao.setText(generatedDescription);
+         onEither.run();
+      };
+      OnFailureListener onFailure = e -> {
+         showFailureToast(this, toastGenerateDescription()).onFailure(e);
+         onEither.run();
+      };
 
+      Thread task = gemini.send(prompt, instructions, onSuccess, onFailure);
       task.start();
+
+      txtDescricao.setText("");
+      txtDescricao.setHint("");
+      txtDescricao.setEnabled(false);
+      prbDescription.setVisibility(View.VISIBLE);
    }
 
 
@@ -105,22 +124,19 @@ public class PaginaCadastroActivity extends AppCompatActivity {
       txtDescricao.setText(remedio.descricao != null ? remedio.descricao : "");
 
       if (remedio.horarioDeConsumo != null) {
-         txtConsumo.setText(remedio.horarioDeConsumo.toString());
+         tmpConsumo.setHour(remedio.horarioDeConsumo.getHour());
+         tmpConsumo.setMinute(remedio.horarioDeConsumo.getMinute());
       } else {
-         txtConsumo.setText("");
+         LocalTime now = context.now();
+         tmpConsumo.setHour(now.getHour());
+         tmpConsumo.setMinute(now.getMinute());
       }
    }
 
    private void screenToObject(Remedio remedio) {
       remedio.nome = txtNome.getText().toString();
       remedio.descricao = txtDescricao.getText().toString();
-      try {
-         remedio.horarioDeConsumo = LocalTime.parse(txtConsumo.getText().toString());
-      } catch (Exception e) {
-         remedio.horarioDeConsumo = context.now();
-         String failureMessage = getString(R.string.toast_validation_consumptionTime_wrongFormat);
-         Toast.makeText(this, failureMessage, Toast.LENGTH_SHORT).show();
-      }
+      remedio.horarioDeConsumo = LocalTime.of(tmpConsumo.getHour(), tmpConsumo.getMinute());
    }
 
    private void inicializarComponentes() {
@@ -130,7 +146,8 @@ public class PaginaCadastroActivity extends AppCompatActivity {
       btnAcharDescricao = findViewById(R.id.btnAcharDescricao);
       txtNome = findViewById(R.id.txtNome);
       txtDescricao = findViewById(R.id.txtDescricao);
-      txtConsumo = findViewById(R.id.txtConsumo);
+      tmpConsumo = findViewById(R.id.tmpConsumo);
+      prbDescription = findViewById(R.id.prbDescription);
    }
 
    private void configurarEventos() {

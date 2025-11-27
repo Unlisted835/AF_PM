@@ -18,6 +18,7 @@
     <string name="button_goBack">Voltar</string>
     <string name="button_saveAndGoBack">Salvar e voltar</string>
     <string name="label_geminiApiKey">Chave API Gemini</string>
+    <string name="label_consumptionTime">Horário de Consumo</string>
     <string name="toast_failure_message">Houve um erro ao</string>
     <string name="toast_failure_context_removeMedicine">remover remédio</string>
     <string name="toast_failure_context_consumeMedicine">consumir remédio</string>
