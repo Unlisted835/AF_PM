@@ -31,4 +31,6 @@
     <string name="toast_validation_consumptionTime_wrongFormat">Time in wrong format. Using current time.</string>
     <string name="toast_success_medicineSaved">Medicine saved successfully!</string>
     <string name="error_gemini_invalidApiKey">INVALID API KEY</string>
+    <string name="notification_medicineTime_title">Medicine Time!</string>
+    <string name="notification_medicineTime_body">It\'s time to take the medicine</string>
 </resources>

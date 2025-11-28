@@ -31,4 +31,6 @@
     <string name="toast_validation_consumptionTime_wrongFormat">Horário em formato errado. Usando horário atual.</string>
     <string name="toast_success_medicineSaved">Remédio salvo com sucesso!</string>
     <string name="error_gemini_invalidApiKey">CHAVE DE API INVÁLIDA</string>
+    <string name="notification_medicineTime_title">Hora do Remédio!</string>
+    <string name="notification_medicineTime_body">Está na hora de tomar o remédio</string>
 </resources>

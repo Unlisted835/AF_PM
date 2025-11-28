@@ -22,4 +22,5 @@ public class ApplicationContext {
     public String geminiForbiddenMessage = "INVALID API KEY";
     public String geminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
     public String geminiApiKeyHeader = "x-goog-api-key";
+    public double consumptionTimeTolerancePercentage = 0.01;
 }
