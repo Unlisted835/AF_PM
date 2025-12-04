@@ -17,18 +17,20 @@ import androidx.core.app.NotificationCompat;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NotificationService extends Service {
 
-   private AtomicInteger idCounter;
-   private ApplicationContext context;
-   private Queue<Notification> toSend;
+   private AtomicInteger idCounter = new AtomicInteger(0);
+   private ApplicationContext context = ApplicationContext.instance();
+   private Database db = Database.instance();
+   private Queue<Remedio> toSend = new ConcurrentLinkedQueue<>();
+   private long SECONDS_IN_DAY = ChronoUnit.DAYS.getDuration().getSeconds();
    private NotificationManager notificationManager;
    private Thread queuingTask, notifyingTask;
-   private long SECONDS_IN_DAY = ChronoUnit.DAYS.getDuration().getSeconds();
 
    @Nullable
    @Override
@@ -39,11 +41,7 @@ public class NotificationService extends Service {
    @Override
    public void onCreate() {
       super.onCreate();
-      toSend = new ConcurrentLinkedQueue<>();
       notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-      context = ApplicationContext.instance();
-      SECONDS_IN_DAY = ChronoUnit.DAYS.getDuration().getSeconds();
-      idCounter = new AtomicInteger(0);
    }
    @Override
    public void onDestroy() {
@@ -86,14 +84,17 @@ public class NotificationService extends Service {
    private void queueMedicines() {
       context.listaAtual
          .stream()
+         .filter(r -> !r.notified)
          .filter(this::isTimeInsideTolerance)
-         .map(this::createNotification)
          .forEach(n -> toSend.add(n));
    }
    private void notifyPending() {
-      Notification n = toSend.poll();
-      if (n == null) return;
+      Remedio r = toSend.poll();
+      if (r == null) return;
+      Notification n = createNotification(r);
       notificationManager.notify(idCounter.incrementAndGet(), n);
+      r.notified = true;
+      db.salvarRemedio(r);
    }
 
    private Notification createForegroundNotification() {

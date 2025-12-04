@@ -13,6 +13,7 @@ public class Remedio {
     public String descricao;
     @Exclude public LocalTime horarioDeConsumo;
     public boolean consumido;
+    public boolean notified;
 
     @Override
     public boolean equals(Object o) {

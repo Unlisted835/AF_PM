@@ -84,6 +84,7 @@ public class PaginaCadastroActivity extends AppCompatActivity {
 
    public void acharDescricaoNaWeb(View v) {
       String nomeAtual = txtNome.getText().toString();
+      String descricaoAtual = txtDescricao.getText().toString();
 
       if (nomeAtual.length() < 5) {
          String failureMessage = getString(R.string.toast_validation_name_toShort);
@@ -106,6 +107,7 @@ public class PaginaCadastroActivity extends AppCompatActivity {
       };
       OnFailureListener onFailure = e -> {
          showFailureToast(this, toastGenerateDescription()).onFailure(e);
+         txtDescricao.setText(descricaoAtual);
          onEither.run();
       };
 
